@@ -31,7 +31,7 @@ class EmbeddingManager:
                     continue
                 
                 vector = np.asarray(values[1:], dtype='float32')
-
+                
                 # average repeated word embeddings
                 if word in self.embeddings_dict:
                     existing_vector = self.embeddings_dict[word]
@@ -73,4 +73,8 @@ class EmbeddingManager:
         words = self.words[idx]
         zipped_result = list(zip(np.ravel(words), np.ravel(distances)))
         return zipped_result
+    
+    def add_special_vectors(self, special_vectors):
+        for key in special_vectors:
+            self.embeddings_dict[key] = special_vectors[key]
     
