@@ -40,19 +40,7 @@ class EmbeddingManager:
                 else:
                     self.embeddings_dict[word] = vector
                     
-        # because of we have to average repeaded word embeddings, we have to iterate one more time
-        # to retrieve separate vectors and labels
-        words = []
-        vectors = []
-        for key in self.embeddings_dict:
-            words.append(key)
-            vectors.append(self.embeddings_dict[key])
-            
-        self.words = np.array(words)
-        self.vectors = np.array(vectors)
-        self.shape = self.vectors[0].shape
-        self.estimator = None
-        print(f'Total embeddings shape: {self.vectors.shape}')
+        self.reset()
         
     def get_vector(self, word):
         word = word.lower()
@@ -74,7 +62,22 @@ class EmbeddingManager:
         zipped_result = list(zip(np.ravel(words), np.ravel(distances)))
         return zipped_result
     
+    def reset(self):
+        words = []
+        vectors = []
+        for key in self.embeddings_dict:
+            words.append(key)
+            vectors.append(self.embeddings_dict[key])
+            
+        self.words = np.array(words)
+        self.vectors = np.array(vectors)
+        self.shape = self.vectors[0].shape
+        self.estimator = None
+        print(f'Total embeddings shape: {self.vectors.shape}')
+    
     def add_special_vectors(self, special_vectors):
         for key in special_vectors:
             self.embeddings_dict[key] = special_vectors[key]
+            
+        self.reset()
     
