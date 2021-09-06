@@ -6,12 +6,22 @@ from nltk.corpus import stopwords
 
 
 class TextPreprocessor:
-    def __init__(self, *, gentle=False):
-        self.gentle_processing = gentle
-        if not gentle:        
+    def __init__(self, *, gentle=False, stopwords_removal=True, lemmatization=True, same_letter_collapsing=True):
+        self.stopwords_removal = stopwords_removal
+        self.lemmatization = lemmatization
+        self.same_letter_collapsing = same_letter_collapsing
+        
+        if gentle:
+            self.stopwords_removal = False
+            self.lemmatization = False
+            self.same_letter_collapsing = False
+        
+        if self.stopwords_removal:        
             nltk.download('stopwords')
             english_stopwords = stopwords.words('english')
             self.stopwords = set(english_stopwords)
+            
+        if self.lemmatization:
             self.nlp = spacy.load('en_core_web_sm')
         
     def collapse_same_letters(self, text):
@@ -32,15 +42,17 @@ class TextPreprocessor:
         text = text.replace('\n', ' ')
         text = text.replace('\t', ' ')
 
-        if not self.gentle_processing:
-            text = self.collapse_same_letters(text)    
+        if self.same_letter_collapsing:
+            text = self.collapse_same_letters(text)
+            
+        if self.stopwords_removal:
             text = self.remove_stop_words(text)
 
         text = re.sub(r'[^a-z ]', ' ', text)
         text = re.sub(r'[a-z]{35,}', ' ', text)
         text = re.sub(r' {2,}', ' ', text)
         
-        if not self.gentle_processing:
+        if self.lemmatization:
             text = self.lemmatize(text)
             
         text = text.strip()
